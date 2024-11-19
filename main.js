@@ -1,81 +1,56 @@
-// 1. Нарушен принцип инверсии зависимостей
-//Исправленный код
-class Service { //Создаем общий интерфейс
-    sendMessage(message) {
-        throw new Error("это интерфейс");
-    }
+// 1 Задача
+function countNumericValues(obj) {
+    const values = Object.values(obj);
+    
+    const numericValues = values.filter(value => typeof value === 'number');
+    
+    return numericValues.length;
 }
 
-class EmailService extends Service{ //Переопределяем этот интерфейс под нужную задачу
-    sendMessage(message) {
-        console.log(`Отправка email с сообщением: ${message}`);
-    }
+// 2 Задача
+const car = {};
+
+Object.defineProperty(car, 'price', {
+    value: 10000,          
+    writable: true,      
+    configurable: true,   
+    enumerable: false     
+});
+
+// 3 Задача
+function combineKeysAndValues(keys, values) {
+    const entries = keys.map((key, i) => [key, values[i]]);
+    
+    const result = Object.fromEntries(entries);
+    
+    return result;
 }
 
-class Notification { 
-  constructor(service) {
-      this.service = service;
-  }
- 
-  notify(message) {
-      this.service.sendMessage(message);
-  }
-}
- 
-const notification = new Notification(new EmailService); 
-notification.notify("Важное сообщение");
- 
- 
- //2. Нарушен принцип подстановки Барбары Лисков
- //Исправленный код: 
+// 4 Задача
+function deepCopy(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    const copy = Array.isArray(obj) ? [] : {};
 
-class Bird {
-    fly() {
-        console.log("Птица летит");
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            copy[key] = deepCopy(obj[key]);
+        }
     }
-    action() {
-        this.fly(); //создаем новый общий метод, который будем вызввать при действии. Передаем в него то, что птица делать умеет делать
-    }
+
+    return copy;
 }
 
-class Duck extends Bird {}
-class Penguin extends Bird {
-
-    action() {
-        this.swim(); //вместо fly используем swim
-    }
-    swim() {
-        console.log("Птица плавает")
-    }
-    fly() {
-        throw new Error("Пингвины не умеют летать");
-    }
-
+// 5 Задача
+function removeKeys(obj, keys) {
+    keys.forEach(key => {
+        if (Object.keys(obj).includes(key)) {
+            delete obj[key]; 
+        }
+    });
 }
 
-const birds = [new Duck(), new Penguin()];
-birds.forEach(bird => bird.action()); //вызывем общщий метод
- 
-
- //3. Был нарушен принцип единственной ответственности
- //Исправленный код:
-
-class Database { //Создаем новый класс для для базы данных, у которого будем вызывать соответствующий метод
-  save(user) {
-      console.log(`Сохранение пользователя ${user.getName()} в базу данных`);
-  }
-}
-class User {
-    constructor(name, age) {
-        this.name = name;
-        this.age = age;
-    }
- 
-    getName() {
-        return this.name;
-    }
-}
-
-const user = new User("Алексей", 30);
-const database = new Database;
-database.save(user);
+const obj = { a: 1, b: 2, c: 3, d: 4 };
+removeKeys(obj, ['a', 'c']);
+console.log(obj); // { b: 2, d: 4 }
