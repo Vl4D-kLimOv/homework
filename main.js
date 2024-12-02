@@ -1,165 +1,187 @@
-// 1 уровень
-// 1 Задание
-const Vehicle = {
-    type: 'транспорт', 
-    move: function() {
-        console.log(`${this.type} движется.`);
+// Уровень 1
+// Задание 1
+class Book {
+    constructor(title, author) {
+        this.title = title;   
+        this.author = author;
     }
-};
 
-const Car = Object.create(Vehicle);
-
-Car.type = 'машина';
-
-Car.move = function() {
-    console.log('Машина едет.');
-};
-
-// 2 Задание
-function Person(name, age) {
-    this.name = name; 
-    this.age = age;   
-
-    this.greet = function() {
-        console.log(`Привет, меня зовут ${this.name}, мне ${this.age} лет.`);
-    };
+    getBookInfo() {
+        return `Название: "${this.title}", Автор: ${this.author}`;
+    }
 }
 
-const person1 = new Person('Влад', 19);
-const person2 = new Person('Саша', 18);
+const myBook = new Book('1984', 'Джордж Оруэлл');
 
-person1.greet(); 
-person2.greet(); 
+console.log(myBook.getBookInfo()); 
 
-// 3 Задание
-const MathHelper = {};
+// Задание 2
+class Person {
+    #name;
+    #age; 
 
-MathHelper.add = function(a, b) {
-    return a + b;
-};
-
-MathHelper.subtract = function(a, b) {
-    return a - b;
-};
-
-MathHelper.multiply = function(a, b) {
-    return a * b;
-};
-
-const sum = MathHelper.add(5, 3);
-const difference = MathHelper.subtract(5, 3);
-const product = MathHelper.multiply(5, 3);
-
-console.log(`Сумма: ${sum}`);          
-console.log(`Разность: ${difference}`); 
-console.log(`Произведение: ${product}`); 
-
-// 2 Уровень
-// 1 Задание
-const newVehicle = {
-    speed: 0, 
-
-    move: function() {
-        console.log(`Транспортное средство движется со скоростью ${this.speed} км/ч.`);
+    constructor(name, age) {
+        this.#name = name; 
+        this.#age = age; 
     }
-};
 
-const newCar = Object.create(newVehicle);
+    getName() {
+        return this.#name; 
+    }
 
-newCar.fuelLevel = 0;
-
-newCar.refuel = function(amount) {
-    this.fuelLevel += amount;
-    console.log(`Уровень топлива увеличен на ${amount} литров. Текущий уровень топлива: ${this.fuelLevel} литров.`);
-};
-
-const myCar = Object.create(newCar);
-
-myCar.speed = 90; 
-myCar.refuel(25);  
-
-myCar.move(); 
-console.log(`Текущий уровень топлива: ${myCar.fuelLevel} литров.`); 
-
-// 2 Задание
-function Pet(name, age) {
-    this.name = name;
-    this.age = age;
+    getAge() {
+        return this.#age;
+    }
 }
 
-Pet.prototype.describe = function() {
-    return `Имя: ${this.name}, Возраст: ${this.age}`;
-};
+const person = new Person('Влад', 19);
 
-Pet.prototype.isOld = function() {
-    return this.age > 10;
-};
+console.log(`Имя: ${person.getName()}`); 
+console.log(`Возраст: ${person.getAge()}`);
 
-Pet.compareAges = function(pet1, pet2) {
-    if (pet1.age > pet2.age) {
-        return `${pet1.name} старше, чем ${pet2.name}.`;
-    } else if (pet1.age < pet2.age) {
-        return `${pet2.name} старше, чем ${pet1.name}.`;
-    } else {
-        return `${pet1.name} и ${pet2.name} одного возраста.`;
+// Задание 3
+class Animal {
+
+    constructor(name, age) {
+        this.name = name; 
+        this.age = age; 
     }
-};
 
-function Dog(name, age, breed) {
-    Pet.call(this, name, age); 
-    this.breed = breed; 
+    describe() {
+        return `Имя ${this.name}, возраст: ${this.age} лет.`;
+    }
+
+    sound() {
+        return `${this.name} издает звук.`;
+    }
 }
 
-
-Dog.prototype = Object.create(Pet.prototype);
-Dog.prototype.constructor = Dog;
-
-Dog.prototype.describe = function() {
-    return `Имя: ${this.name}, Возраст: ${this.age}, Порода: ${this.breed}`;
-};
-
-
-Dog.prototype.bark = function() {
-    return `${this.name} лает!`;
-};
-
-Dog.prototype.fetch = function(item) {
-    return `${this.name} приносит ${item}.`;
-};
-
-function GuardDog(name, age, breed, trainingLevel) {
-    Dog.call(this, name, age, breed); 
-    this.trainingLevel = trainingLevel; 
+class Dog extends Animal {
+    sound() {
+        return `${this.name} лает!`;
+    }
 }
 
-GuardDog.prototype = Object.create(Dog.prototype);
-GuardDog.prototype.constructor = GuardDog;
+const animal = new Animal('Медведь', 5);
+console.log(animal.describe()); 
+console.log(animal.sound());    
 
-GuardDog.prototype.bark = function() {
-    if (this.trainingLevel > 5) {
-        return `${this.name} лает громко!`;
-    }
-    return `${this.name} лает!`;
-};
-
-GuardDog.prototype.guard = function() {
-    return `${this.name} охраняет территорию на уровне ${this.trainingLevel}.`;
-};
-
-
-const pet = new Pet('Барсик', 3);
-console.log(pet.describe()); 
-console.log(pet.isOld()); 
-
-const dog = new Dog('Реф', 5, 'Немецкая овчарка');
+const dog = new Dog('Рекс', 3);
 console.log(dog.describe()); 
-console.log(dog.bark()); 
-console.log(dog.fetch('палку')); 
+console.log(dog.sound()); 
 
-const guardDog = new GuardDog('Шарик', 7, 'Бульдог', 6);
-console.log(guardDog.describe()); 
-console.log(guardDog.bark()); 
-console.log(guardDog.guard()); 
+// Уроовень 2
+// Задание 1
+class newPerson {
+    _name;
+
+    constructor(name) {
+        this._name = name;
+    }
+
+    getName() {
+        return this._name;
+    }
+
+    setName(newName) {
+        this._name = newName;
+    }
+}
+
+class Student extends newPerson {
+    _grade;
+
+    constructor(name, grade) {
+        super(name); 
+        this.setGrade(grade);
+    }
+
+    getGrade() {
+        return this._grade;
+    }
+
+    setGrade(newGrade) {
+        if (newGrade < 1 || newGrade > 5) {
+            console.log('Ошибка: Оценка должна быть в пределах от 1 до 5.');
+            return; 
+        }
+        this._grade = newGrade;
+    }
+}
+
+const newperson = new newPerson('Иван Иваныч');
+console.log(newperson.getName()); 
+
+newperson.setName('Саша');
+console.log(newperson.getName()); 
+
+const student = new Student('Вася', 4);
+console.log(student.getName()); 
+console.log(student.getGrade()); 
+
+student.setGrade(5);
+console.log(student.getGrade());
+
+student.setGrade(6);
+
+// Задание 2
+class Shape {
+
+    static count = 0;
+
+    #name;
+
+    constructor(name) {
+        this.#name = name;
+        Shape.count++;
+    }
+
+    getArea() {
+        print("Метод 'getArea()' должен быть переопределен в подклассе.");
+    }
+
+    getName() {
+        return this.#name;
+    }
+
+    static getCount() {
+        return Shape.count;
+    }
+}
 
 
-console.log(Pet.compareAges(pet, dog));
+class Rectangle extends Shape {
+
+    constructor(width, height) {
+        super('Rectangle'); 
+        this.width = width;
+        this.height = height;
+    }
+
+
+    getArea() {
+        return this.width * this.height;
+    }
+}
+
+
+class Circle extends Shape {
+
+    constructor(radius) {
+        super('Circle'); 
+        this.radius = radius;
+    }
+
+    getArea() {
+        return Math.PI * this.radius ** 2;
+    }
+}
+
+
+const rectangle = new Rectangle(5, 10);
+const circle = new Circle(4);
+
+console.log(`${rectangle.getName()} - Площадь: ${rectangle.getArea()}`); 
+console.log(`${circle.getName()} - Площадь: ${circle.getArea()}`); 
+
+console.log(`Количество созданных фигур: ${Shape.getCount()}`); 
