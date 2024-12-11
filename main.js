@@ -1,138 +1,118 @@
-//1 Уровень
-//1 Задание
-
-function wait(ms) {
-    return new Promise((resolve) => {
+function delay(ms) {
+    return new Promise(resolve => {
         setTimeout(() => {
             resolve();
         }, ms);
     });
-}
-
-wait(10000) 
-    .then(() => {
-        console.log('Промис разрешен!'); 
-    });
-
-//2 Задание
-
-function step1() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Шаг 1 выполнен");
-        }, 1000);
-    });
-}
-
-function step2() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Шаг 2 выполнен");
-        }, 2000);
-    });
-}
-
-step1()
-    .then((result1) => {
-        console.log(result1); 
-        return step2(); 
-    })
-    .then((result2) => {
-        console.log(result2);
-    })
-
-//3 Задание
-function task1() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Задача 1 завершена");
-        }, 1000);
-    });
-}
-
-
-function task2() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Задача 2 завершена");
-        }, 2000); 
-    });
-}
-
-function task3() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Задача 3 завершена");
-        }, 3000); 
-    });
-}
-
-Promise.all([task1(), task2(), task3()])
-    .then((results) => {
-        results.forEach(result => console.log(result));
-    })
-
-//2 Уровень
-//1 Задание
-
-const usersUrl = 'https://jsonplaceholder.typicode.com/users'; 
-const postsUrl = 'https://jsonplaceholder.typicode.com/posts'; 
-const commentsUrl = 'https://jsonplaceholder.typicode.com/comments';
-
-function fetchData(url) {
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                return Promise.reject();
-            }
-            return response.json();
-        });
-}
-
-Promise.all([
-    fetchData(usersUrl),
-    fetchData(postsUrl),
-    fetchData(commentsUrl)
-])
-.then(([users, posts, comments]) => {
-    console.log('Пользователи:', users);
-    console.log('Посты:', posts);
-    console.log('Комментарии:', comments);
-})
-.catch(() => {
-    console.log('Ошибка при получении данных');
-});
-
-//2 Задание
-const usersUrlNew = 'https://jsonplaceholder.typicode.com/users';
-const postsUrlNew = 'https://jsonplaceholder.typicode.com/posts';
-const commentsUrlNew = 'https://jsonplaceholder.typicode.com/comments';
-
-const fetchWithTimeout = (url) => {
-    return Promise.race([
-        fetch(url).then(response => {
-            if (!response.ok) {
-                return Promise.reject('Ошибка при получении данных');
-            }
-            return response.json();
-        }),
-        new Promise((_, reject) =>
-            setTimeout(() => reject('Запрос превышает время ожидания'), 5000)
-        )
-    ]);
 };
 
-Promise.all([
-    fetchWithTimeout(usersUrlNew),
-    fetchWithTimeout(postsUrlNew),
-    fetchWithTimeout(commentsUrlNew)
-])
-.then(results => {
-    const [users, posts, comments] = results;
-    console.log('Пользователи:', users);
-    console.log('Посты:', posts);
-    console.log('Комментарии:', comments);
-})
-.catch(error => {
-    console.log(error);
-});
+async function performAction() {
+    console.log("Action started");
+    await delay(2000);
+    console.log("Action completed after delay");
+};
+
+performAction();
+
+function divideNumbers(a, b) {
+    try {
+        if (typeof a !== 'number' || typeof b !== 'number') {
+            throw new Error("Ожидались числа");
+        }
+        
+        if (b === 0) {
+            throw new Error("Нельзя делить на 0");
+        }
+
+        return console.log(a / b);
+
+    } catch (error) {
+        console.error(error.message);
+    }
+};
+
+divideNumbers(4, 2);
+divideNumbers(1, 0);
+divideNumbers(10, 'x');
+divideNumbers('x', 'y');
+
+
+async function fetchUserData() {
+    const url = 'https://jsonplaceholder.typicode.com/users';
+
+    try {
+        const response = await fetch(url);
+
+
+        if (!response.ok) {
+            throw new Error('Ошибка получения данных');
+        }
+
+        const users = await response.json();
+
+        users.forEach(user => {
+            console.log(user.name);
+        });
+
+    } catch (error) {
+
+        console.error(error.message);
+    }
+};
+
+fetchUserData();
+
+async function fetchJson(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error('Ошибка при получении данных');
+    }
+    return response.json();
+}
+
+async function fetchUserDataNew() {
+    try {
+
+        const posts = await fetchJson('https://jsonplaceholder.typicode.com/posts');
+        
+        const evenIdPosts = posts.filter(post => post.id % 2 === 0);
+        
+        const commentsPromises = evenIdPosts.map(post => 
+            fetchJson(`https://jsonplaceholder.typicode.com/comments?postId=${post.id}`)
+        );
+        
+        const commentsArray = await Promise.all(commentsPromises);
+        
+        const results = evenIdPosts.map((post, index) => {
+            const comments = commentsArray[index];
+            let longestComment = { body: '' };
+            
+            comments.forEach(comment => {
+                if (comment.body.length > longestComment.body.length) {
+                    longestComment = comment;
+                }
+            });
+            
+            return { postId: post.id, longestComment: longestComment.body };
+        });
+        
+        const postPromises = results.map(result => 
+            fetch('https://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(result)
+            })
+        );
+
+        await Promise.all(postPromises);
+        console.log('Результаты успешно сохранены');
+        
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+
+fetchUserDataNew();
