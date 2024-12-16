@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление параграфа</title>
+    <style>
+        #container {
+            margin-top: 20px;
+            border: 1px solid #000000;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button id="addParagraphButton">Добавить параграф</button>
+    <div id="container"></div>
+
+    <script>
+        const container = document.getElementById('container');
+        const addParagraphButton = document.getElementById('addParagraphButton');
+
+        function addParagraph() {
+            const newParagraph = document.createElement('p');
+            newParagraph.textContent = 'Новый параграф';
+            container.appendChild(newParagraph);
+        }
+
+        addParagraphButton.addEventListener('click', addParagraph);
+    </script>
+</body>
+</html>
